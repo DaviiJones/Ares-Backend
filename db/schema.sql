@@ -6,13 +6,13 @@ CREATE DATABASE ares_dev;
 
 
 
-CREATE TABLE marsMission (
-    id SERIAL PRIMARY KEY, 
-    earthDate DATE NOT NULL,
-    roverName TEXT NOT NULL,
-    frontCamera TEXT,
-    rearCamera TEXT, 
-    mastCamera TEXT,
-    picture LONGBLOB,
-    isFavorite BOOLEAN,
+CREATE TABLE Missions (
+    id INT SERIAL PRIMARY KEY, 
+    earth_Date DATE NOT NULL,
+    rover_Name TEXT NOT NULL,
+    front_Camera TEXT,
+    rear_Camera TEXT, 
+    mast_Camera TEXT,
+    picture BLOB,
+    isFavorite BOOLEAN DEFAULT FALSE,
 );
