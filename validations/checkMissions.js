@@ -42,16 +42,6 @@ const checkMastCamera = (req, res, next) => {
     }
 }
 
-
-const checkPicture = (req, res, next) => {
-    if (req.body.picture === true || req.body.picture === false) {
-        console.log("picture is good")
-        next()
-    } else {
-        res.status(400).json({ error: "picture must be a boolean value" })
-    }
-}
-
 const checkBoolean = (req, res, next) => {
     if (req.body.is_favorite === true || req.body.is_favorite === false) {
         console.log("boolean is good")

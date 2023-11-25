@@ -1,75 +1,37 @@
 const express = require("express");
-const {
-    getAllMissions,
-    createMission,
-    getOneMission,
-    deleteMission,
-    updateMission,
-} = require("../queries/songs.js");
+const bodyParser = require('body-parser');
+const cors = require("cors");
+const axios = require('axios');
 
+const missionController = express.Router();
 
-const missions = express.Router();
+missionController.use(bodyParser.json());
+missionController.use(cors());
 
-songs.get("/", async (req, res) => {
-    const allMissions = await getAllMissions();
+const apiKey = 'YOUR_NASA_API_KEY';
 
-    if (allMissions[0]) {
-        res.status(200).json(allMissions);
-    } else {
-        res
-            .status(500)
-            .json({
-                success: false,
-                data: { error: "Server Error - Missions not Uploaded!" },
-            });
-    }
-});
-
-
-songs.get("/:id", async (req, res) => {
-    const { id } = req.params;
-    const oneMission = await getOneMission(id);
-
-    if (oneMission.id) {
-        res.status(200).json(oneMission);
-    } else {
-        res.status(404).json("Mission not Found");
-    }
-});
-
-songs.post("/", async (req, res) => {
+missionController.get("/photos", async (req, res) => {
     try {
-        const createMission = await createMission(req.body);
-        res.status(200).json(createMission);
-    } catch (error) {
-        res.status(400).json({ error: "There was an error" });
-    }
-});
+        const earthDate = req.query.earthDate;
+        const roverName = req.query.roverName;
 
-songs.delete("/:id", async (req, res) => {
-    try {
-        const { id } = req.params;
-        const deletedMission = await deletedMission(id);
+        const apiUrl = `https://api.nasa.gov/mars-photos/api/v1/rovers/${roverName}/photos?earth_date=${earthDate}&api_key=${apiKey}`;
+        
+        const response = await axios.get(apiUrl);
+        const photosData = response.data.photos;
 
-        if (deletedMission.id) {
-            res.status(200).json(deletedMission);
+        if (photosData.length > 0) {
+            const resultsToMap = photosData.slice(0, 10);
+            const mappedResults = resultsToMap.map(photo => photo.img_src);
+
+            res.status(200).json({ mappedResults });
         } else {
-            res.status(404).json("No mission at that id");
+            res.status(404).json({ error: 'No photos found for the given parameters' });
         }
     } catch (error) {
-        res.send(error);
+        console.error('Error fetching Mission photos:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
-songs.put("/:id", async (req, res) => {
-    const { id } = req.params;
-    const updatedMission = await updatedMission(id, req.body);
-
-    if (updatedMission.id) {
-        res.status(200).json(updatedMission);
-    } else {
-        res.status(404).json("No mission at that id");
-    }
-});
-
-module.exports = missions
+module.exports = missionController;
